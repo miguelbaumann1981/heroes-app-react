@@ -4,24 +4,34 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Brain, Heart, Zap, Eye, Gauge, Shield } from 'lucide-react';
 import type { Hero } from '../types/hero.interface';
+import { useNavigate } from 'react-router';
 
 interface Props {
   hero: Hero;
 }
 
 export const HeroGridCard = ({ hero }: Props) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/heroes/${hero.slug}`);
+  };
+
   return (
-    <Card className='group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-gray-50'>
+    <Card className='group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-linear-to-br from-white to-gray-50'>
       <div className='relative h-64 overflow-hidden'>
         <img
           src={hero.image}
           alt={hero.alias}
-          className='object-cover transition-all duration-500 group-hover:scale-110'
+          className='object-cover transition-all duration-500 group-hover:scale-110 absolute top-7.5 w-full h-102.5'
+          onClick={handleClick}
         />
 
         {/* Status indicator */}
         <div className='absolute top-3 left-3 flex items-center gap-2'>
-          <div className='w-3 h-3 rounded-full bg-green-500' />
+          <div
+            className={`w-3 h-3 rounded-full ${hero.status === 'Active' ? 'bg-green-500' : 'bg-red-500'}`}
+          />
           <Badge
             variant='secondary'
             className='text-xs bg-white/90 text-gray-700'
@@ -124,15 +134,17 @@ export const HeroGridCard = ({ hero }: Props) => {
         <div className='space-y-2'>
           <h4 className='font-medium text-sm'>Powers:</h4>
           <div className='flex flex-wrap gap-1'>
-            {hero.powers.map((power) => (
+            {hero.powers.slice(0, 3).map((power) => (
               <Badge key={power} variant='outline' className='text-xs'>
                 {power}
               </Badge>
             ))}
 
-            <Badge variant='outline' className='text-xs bg-gray-100'>
-              +4 more
-            </Badge>
+            {hero.powers.length > 3 && (
+              <Badge variant='outline' className='text-xs bg-gray-100'>
+                +{hero.powers.length - 3} more
+              </Badge>
+            )}
           </div>
         </div>
 

@@ -2,7 +2,7 @@ import type { Hero } from '../types/hero.interface';
 import { HeroGridCard } from './HeroGridCard';
 
 interface Props {
-  heroes: Hero[] | undefined;
+  heroes: Hero[];
 }
 
 export const HeroGrid = ({ heroes }: Props) => {
