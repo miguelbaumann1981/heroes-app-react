@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { use, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CustomJumbotron } from '@/components/ui/custom/CustomJumbotron';
 import { HeroStats } from '@/heroes/components/HeroStats';
@@ -8,6 +8,7 @@ import { CustomBreadcrumbs } from '@/components/ui/custom/CustomBreadcrumbs';
 import { useSearchParams } from 'react-router';
 import { useHeroSummary } from '@/heroes/hooks/useHeroSummary';
 import { usePaginatedHero } from '@/heroes/hooks/usePaginatedHero';
+import { FavoriteHeroContext } from '@/heroes/context/FavoriteHeroContext';
 
 export const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,6 +24,8 @@ export const HomePage = () => {
 
   const { data: heroesResponse } = usePaginatedHero(+page, +limit, category);
   const { data: summary } = useHeroSummary();
+
+  const { favoriteCount, favorites } = use(FavoriteHeroContext);
 
   return (
     <>
@@ -41,6 +44,7 @@ export const HomePage = () => {
       {/* Tabs */}
       <Tabs value={selectedTab} className='mb-8'>
         <TabsList className='grid w-full grid-cols-4'>
+          {/* All */}
           <TabsTrigger
             value='all'
             onClick={() =>
@@ -54,6 +58,8 @@ export const HomePage = () => {
           >
             All Characters ({summary?.totalHeroes})
           </TabsTrigger>
+
+          {/* Favorites */}
           <TabsTrigger
             value='favorites'
             className='flex items-center gap-2'
@@ -64,8 +70,10 @@ export const HomePage = () => {
               })
             }
           >
-            Favorites (3)
+            Favorites ({favoriteCount})
           </TabsTrigger>
+
+          {/* Heroes */}
           <TabsTrigger
             value='heroes'
             onClick={() =>
@@ -79,6 +87,8 @@ export const HomePage = () => {
           >
             Heroes ({summary?.heroCount})
           </TabsTrigger>
+
+          {/* Villains */}
           <TabsTrigger
             value='villains'
             onClick={() =>
@@ -99,7 +109,7 @@ export const HomePage = () => {
         </TabsContent>
 
         <TabsContent value='favorites'>
-          <HeroGrid heroes={heroesResponse?.heroes ?? []} />
+          <HeroGrid heroes={favorites} />
         </TabsContent>
 
         <TabsContent value='heroes'>
@@ -112,7 +122,9 @@ export const HomePage = () => {
       </Tabs>
 
       {/* Pagination */}
-      <CustomPagination totalPages={heroesResponse?.pages ?? 1} />
+      {selectedTab !== 'favorites' && (
+        <CustomPagination totalPages={heroesResponse?.pages ?? 1} />
+      )}
     </>
   );
 };
